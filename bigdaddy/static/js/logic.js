@@ -101,6 +101,12 @@ statesData.features.forEach(function (stateData) {
   })
 })
 
+const covidData = d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
+  latestDate = data[0].date
+  console.log("latest date", latestDate)
+  
+  return data
+  });
 geojson = L.geoJson(statesData, {
   style: style,
    onEachFeature: onEachFeature,
@@ -108,7 +114,3 @@ geojson = L.geoJson(statesData, {
 }).addTo(map);
 console.log("covidData", covidData)
 console.log("geojson",geojson)
-
-const covidData = d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
-return data
-});
