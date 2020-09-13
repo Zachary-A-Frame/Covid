@@ -101,9 +101,9 @@ function onEachFeature(feature, layer) {
   //console.log("layer1", layer1)
   //inserting layer1 does not work.  Insersting numb does not work.  Bizarre.
   layer.bindPopup("<h3>State: " + feature.properties.name +
-    "</h3><h4>Total Tests: " + feature.properties.totalTestResults +
-    "</h4><h4>Total Positive: " + feature.properties.positive +
-    "</h4><h4>Hospitalized Currently: " + feature.properties.hospitalizedCurrently +
+    "</h3><h4>Total Tests: " + parseFloat(feature.properties.totalTestResults).toLocaleString('en') +
+    "</h4><h4>Total Positive: " + parseFloat(feature.properties.positive).toLocaleString('en') +
+    "</h4><h4>Hospitalized Currently: " + parseFloat(feature.properties.hospitalizedCurrently).toLocaleString('en') +
     "</h4><h4>Total deaths: " + feature.properties.deaths +
     "</h4>");
 
