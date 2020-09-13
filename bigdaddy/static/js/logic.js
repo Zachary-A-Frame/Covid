@@ -115,15 +115,18 @@ console.log("staes data final", statesData)
 L.geoJson(statesData).addTo(map);
 console.log("statesData", statesData)
 
+colorsList = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C', '#FED976','#FFEDA0' ]
+colorValues = [1000, 500, 200, 100, 50, 20, 10]
+
 function getColor(d) {
-  return d > 1000 ? '#800026' :
-    d > 500 ? '#BD0026' :
-      d > 200 ? '#E31A1C' :
-        d > 100 ? '#FC4E2A' :
-          d > 50 ? '#FD8D3C' :
-            d > 20 ? '#FEB24C' :
-              d > 10 ? '#FED976' :
-                '#FFEDA0';
+  return d > colorValues[0] ? colorsList[0] :
+    d > colorValues[1] ? colorsList[1] :
+      d > colorValues[2] ? colorsList[2] :
+        d > colorValues[3] ? colorsList[3] :
+          d > colorValues[4] ? colorsList[4] :
+            d > colorValues[5] ? colorsList[5] :
+              d > colorValues[6] ? colorsList[6] :
+                colorsList[7];
 }
 
 geojson = L.geoJson(statesData, {
@@ -147,23 +150,22 @@ console.log("geojson", geojson)
 
 }).catch(console.log.bind(console));
 
-var legend = L.control({position: 'bottomright'});
 
-legend.onAdd = function (map) {
+var legend = L.control({ position: "bottomright" });
+legend.onAdd = function () {
+  var div = L.DomUtil.create("div", "info legend");
 
-    var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-        labels = [];
+  //    var colors = earthquakes.options.colors;
+  var labels = [];
 
-    // loop through our density intervals and generate a label with a colored square for each interval
-    for (var i = 0; i < feature.properties.length; i++) {
-        div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-    }
+  // Add min & max
+  var legendInfo = "<h1>Magnitude</h1>";
 
-    return div;
+  div.innerHTML = legendInfo;
+ 
+  labels.push("<li>well hi there</li>")
+
+  div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+  return div;
 };
-
-legend.addTo(map);
-
+legend.addTo(map)
