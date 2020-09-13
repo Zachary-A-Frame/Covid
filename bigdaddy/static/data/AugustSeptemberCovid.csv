@@ -1,4 +1,5 @@
 id,date,state,statename,deaths,hospitalizedCurrently,positive,totalTestResults
+0,20200911,AK,Alaska,2333,15527,136703,1010922
 1,20200911,AL,Alabama,2333,15527,136703,1010922
 2,20200911,AR,Arkansas,953,4678,68983,798358
 3,20200911,AS,American Samoa,0,0,0,1571

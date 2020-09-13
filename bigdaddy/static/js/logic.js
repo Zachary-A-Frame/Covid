@@ -1,6 +1,6 @@
 // Store our API endpoint inside queryUrl
 
-var map = L.map('map').setView([37.8, -96], 4);
+var myMap = L.map('map').setView([37.8, -96], 4);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' +
   API_KEY, {
@@ -8,7 +8,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
   attribution: "mapbox",
   tileSize: 512,
   zoomOffset: -1
-}).addTo(map);
+}).addTo(myMap);
 
 console.log("statesData.features", statesData.features)
 
@@ -93,13 +93,13 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   console.log("oneDataset...........", oneDataset)
   statesData.features.forEach(function (stateData) {
     oneDataset.forEach(function (oneData) {
-      console.log("ddddd", stateData)
-      console.log("oneDataset", oneData)
-      console.log("properaties name", stateData.properties.name)
-      console.log("oneDataset statename", oneData.statename)
+      // console.log("ddddd", stateData)
+      // console.log("oneDataset", oneData)
+      // console.log("properaties name", stateData.properties.name)
+      // console.log("oneDataset statename", oneData.statename)
       if (stateData.properties.name == oneData.statename) {
-        console.log("stateData.properties", stateData.properties)
-        console.log("oneData", oneData)
+        // console.log("stateData.properties", stateData.properties)
+        // console.log("oneData", oneData)
         //stateData.properties.density = 67898
         stateData.properties.hospitalizedCurrently = +oneData.hospitalizedCurrently;
         stateData.properties.positive = +oneData.positive;
@@ -112,11 +112,43 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   })
 console.log("staes data final", statesData)
 
-L.geoJson(statesData).addTo(map);
-console.log("statesData", statesData)
+L.geoJson(statesData).addTo(myMap);
+console.log("statesData+_+_+_+_+_+", statesData)
 
-colorsList = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C', '#FED976','#FFEDA0' ]
-colorValues = [1000, 500, 200, 100, 50, 20, 10]
+var colorsList = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C', 'FEB24C', '#FED976','#FFEDA0' ]
+var colorValues = [1000, 500, 200, 100, 50, 20, 10]
+
+//lets scale the color values for the property selected
+
+var positiveMap = statesData.features.map(function(d){
+    return d.properties.positive
+  })
+
+  var hospitalizedCurrently = statesData.features.map(function(d){
+    return d.properties.hospitalizedCurrently
+  })
+
+  var deathsMap = statesData.features.map(function(d){
+    return d.properties.deaths
+  })
+
+  var totalTestResultsMap = statesData.features.map(function(d){
+    return d.properties.totalTestResults
+  })
+
+
+console.log("positiveMap", positiveMap)
+
+colorValues[0] = Math.max.apply(Math, positiveMap) * .9;
+colorValues[colorsList.length - 1] = Math.min.apply(Math, positiveMap) * .9;
+console.log("maximum value", Math.max.apply(Math, positiveMap))
+console.log("first color", colorValues[0]);
+for (var i = 1; i < colorsList.length-1; i++) {
+colorValues[i] = colorValues[0] - i * (colorValues[0] - colorValues[colorsList.length
+ - 1]) / colorsList.length
+}
+
+console.log("colorValues", colorValues)
 
 function getColor(d) {
   return d > colorValues[0] ? colorsList[0] :
@@ -133,7 +165,7 @@ geojson = L.geoJson(statesData, {
   style: style,
   onEachFeature: onEachFeature,
   //onEachFeatured: onEachFeatured
-}).addTo(map);
+}).addTo(myMap);
 //console.log("covidData...........", covidData)
 
 function style(feature) {
@@ -168,4 +200,4 @@ legend.onAdd = function () {
   div.innerHTML += "<ul>" + labels.join("") + "</ul>";
   return div;
 };
-legend.addTo(map)
+legend.addTo(myMap)
