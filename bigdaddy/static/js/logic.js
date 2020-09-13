@@ -1,14 +1,41 @@
 // Store our API endpoint inside queryUrl
 
-var myMap = L.map('map').setView([37.8, -96], 4);
+var myMap = L.map('map').setView([37.8, -96], 5);
 
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' +
+var stateMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' +
   API_KEY, {
   id: 'mapbox/light-v9',
   attribution: "mapbox",
   tileSize: 512,
   zoomOffset: -1
 }).addTo(myMap);
+
+// Create a base layer that holds all three maps.
+let baseMaps = {
+  "Streets": stateMap,
+};
+
+// Create the layers for our two different sets of data, earthquakes and tectonicplates.
+let positiveCasesLayer = new L.LayerGroup();
+let hospitizationsLayer = new L.LayerGroup();
+let totalTestsLayer = new L.LayerGroup();
+let deathsLayer = new L.LayerGroup();
+
+// let tectonicplates = new L.LayerGroup();
+
+// We define an object contains all of our overlays.
+// This overlay will be visible all the time.
+let overlayMaps = {
+
+  "Total Tests": totalTestsLayer,
+  "Positive Cases": positiveCasesLayer,
+  "Hospitalizations": hospitizationsLayer,
+  "Total Deaths": deathsLayer
+};
+
+// Then we add a control to the map that will allow the user to change which
+// layers are visible.
+L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
 console.log("statesData.features", statesData.features)
 
@@ -116,7 +143,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
 
   var colorsList = ['#800026', '#BD0026', '#E5E059', '#BDD358', '#FFFFFF', '#999799',
     '#3066BE', '#60AFFF', "#28C2FF", "#2AF5FF"]
-  var colorValues = [1000, 700, 500, 400, 100, 80, 70, 60, 50, 10]
+  var colorValues = []
 
   var colorLabels = ["0 - 1", "1 - 2", "2 - 3", "3 - 4", "4 - 5", "5 - 6", ">6"]
 
@@ -155,7 +182,37 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
 
   console.log("colorValues", colorValues)
 
+  colorValues.forEach(function(d,i){
+    colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
+     + thousandsSeparators(Math.floor(colorValues[i+1]))
+  })
+
+  var legend = L.control({ position: "bottomright" });
+  legend.onAdd = function () {
+    var div = L.DomUtil.create("div", "info legend");
+
+    //    var colors = earthquakes.options.colors;
+    var labels = [];
+
+    // Add min & max
+    var legendInfo = "<h1>Positive    f      Cases</h1>";
+
+    div.innerHTML = legendInfo;
+    console.log("color values _$_%_^_", colorValues)
+    colorsList.forEach(function (d, index) {
+      //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
+      labels.push("<li style=\"background-color:" + d + "\"></li><span>"
+        + colorLabels[index] + "</span><br>")
+    });
+
+    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+    return div;
+  };
+  legend.addTo(myMap)
+
+
   function getColor(d) {
+    console.log("get color", d)
     return d > colorValues[0] ? colorsList[0] :
       d > colorValues[1] ? colorsList[1] :
         d > colorValues[2] ? colorsList[2] :
@@ -175,9 +232,17 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   }).addTo(myMap);
   //console.log("covidData...........", covidData)
 
+var graphSetting = ["positive"]
+var variableG = graphSetting[0]
+console.log("graphsettings", graphSetting[0])
+console.log("variableG", graphSetting[0])
+// console.log("feature.properties.positive", feature.properties)
+// console.log("feature.properties.graphsetting[0]", feature.properties.graphSetting[0])
+// console.log(eval(graphSetting[0]))
   function style(feature) {
+    var colorStyle = feature.properties.positive
     return {
-      fillColor: getColor(feature.properties.positive),
+      fillColor: getColor(colorStyle),
       weight: 2,
       opacity: 1,
       color: 'white',
@@ -186,28 +251,9 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     };
   }
   console.log("geojson", geojson)
-  var legend = L.control({ position: "bottomright" });
-  legend.onAdd = function (colorValues) {
-    var div = L.DomUtil.create("div", "info legend");
-
-    //    var colors = earthquakes.options.colors;
-    var labels = [];
-
-    // Add min & max
-    var legendInfo = "<h1>Magnitude</h1>";
-
-    div.innerHTML = legendInfo;
-
-    colorValues.forEach(function (d, index) {
-      //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
-      labels.push("<li style=\"background-color:" + d + "\"></li><span>"
-        + colorLabels[index] + "</span><br>")
-    });
-
-    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-    return div;
-  };
-  legend.addTo(myMap)
+  L.control.layers(baseMaps, overlayMaps, {
+    collapsed: false
+  }).addTo(myMap);
 }).catch(console.log.bind(console));
 
 
