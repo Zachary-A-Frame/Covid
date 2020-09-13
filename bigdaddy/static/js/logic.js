@@ -12,31 +12,12 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 
 console.log("statesData.features", statesData.features)
 
-L.geoJson(statesData).addTo(map);
-console.log("statesData", statesData)
-function getColor(d) {
-  return d > 1000 ? '#800026' :
-    d > 500 ? '#BD0026' :
-      d > 200 ? '#E31A1C' :
-        d > 100 ? '#FC4E2A' :
-          d > 50 ? '#FD8D3C' :
-            d > 20 ? '#FEB24C' :
-              d > 10 ? '#FED976' :
-                '#FFEDA0';
-}
+
+
 
 var geojson;
 
-function style(feature) {
-  return {
-    fillColor: getColor(feature.properties.density),
-    weight: 2,
-    opacity: 1,
-    color: 'white',
-    dashArray: '3',
-    fillOpacity: 0.7
-  };
-}
+
 
 function highlightFeature(e) {
   var layer = e.target;
@@ -47,8 +28,8 @@ function highlightFeature(e) {
     dashArray: '',
     fillOpacity: 0.7
   })
-  .bindPopup("<h3>Plate Name:"  +
-  "</h3>");
+    // .bindpopup("<h3>Plate Name:" +
+    //   "</h3>");
 
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
     layer.bringToFront();
@@ -66,7 +47,7 @@ function resetHighlight(e) {
 var oneDataset = [];
 
 // 
-console.log("states data", statesData)
+console.log("states data++++++++++++++++", statesData)
 // })
 
 function onEachFeature(feature, layer) {
@@ -77,40 +58,85 @@ function onEachFeature(feature, layer) {
     mouseout: resetHighlight,
     //click: zoomToFeature
   })
-  layer.bindPopup("<h3>Plate Name:" + feature.properties.name +
-  "</h3>");
+  console.log("feature2", feature.properties.name)
+  layer.bindPopup("<h3>State: " + feature.properties.name +
+    "</h3>");
 
 }
-statesData.features.forEach(function (stateData) {
-  console.log("ddddd", stateData)
-  console.log("oneDataset", oneDataset)
-  console.log("properaties name", stateData.properties.name)
-  console.log("oneData statename", oneDataset.statename)
-  oneDataset.forEach(function (oneData) {
-    console.log("properaties name", stateData.properties.name)
-    console.log("oneData statename", oneData.statename)
-    if (stateData.properties.name = oneData.statename) {
-      console.log("stateData.properties", stateData.properties)
-      console.log("oneData", oneData)
-      stateData.properties.density = 67898
-      stateData.properties.hospitalizedCurrently = +oneData.hospitalizedCurrently,
-      stateData.properties.positive = +oneData.positive,
-      stateData.properties.totalTestResults = +oneData.totalTestResults,
-      stateData.properties.deaths = +oneData.deaths
-    }
-  })
-})
 
-const covidData = d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
+d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   latestDate = data[0].date
   console.log("latest date", latestDate)
-  
-  return data
-  });
+  return (data.filter(function (d) {
+    return (d.date == latestDate);
+  }));
+}).then(function (oneDataset) {
+  console.log("oneDataset...........", oneDataset)
+  statesData.features.forEach(function (stateData) {
+    oneDataset.forEach(function (oneData) {
+      console.log("ddddd", stateData)
+      console.log("oneDataset", oneData)
+      console.log("properaties name", stateData.properties.name)
+      console.log("oneDataset statename", oneData.statename)
+      if (stateData.properties.name == oneData.statename) {
+        console.log("stateData.properties", stateData.properties)
+        console.log("oneData", oneData)
+        //stateData.properties.density = 67898
+        stateData.properties.hospitalizedCurrently = +oneData.hospitalizedCurrently;
+        stateData.properties.positive = +oneData.positive;
+        stateData.properties.totalTestResults = +oneData.totalTestResults;
+        stateData.properties.deaths = +oneData.deaths;
+        console.log("stateData.properties------------------", stateData.properties)
+      }
+      console.log("stateData.properties88888888888888888", stateData.properties)
+    })
+  })
+console.log("staes data final", statesData)
+
+L.geoJson(statesData).addTo(map);
+console.log("statesData", statesData)
+function getColor(d) {
+  return d > 1000 ? '#800026' :
+    d > 500 ? '#BD0026' :
+      d > 200 ? '#E31A1C' :
+        d > 100 ? '#FC4E2A' :
+          d > 50 ? '#FD8D3C' :
+            d > 20 ? '#FEB24C' :
+              d > 10 ? '#FED976' :
+                '#FFEDA0';
+}
+
 geojson = L.geoJson(statesData, {
   style: style,
-   onEachFeature: onEachFeature,
- //onEachFeatured: onEachFeatured
+  onEachFeature: onEachFeature,
+  //onEachFeatured: onEachFeatured
 }).addTo(map);
-console.log("covidData", covidData)
-console.log("geojson",geojson)
+//console.log("covidData...........", covidData)
+
+
+
+
+
+function style(feature) {
+  return {
+    fillColor: getColor(feature.properties.density),
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7
+  };
+}
+console.log("geojson", geojson)
+
+
+
+
+
+
+
+
+}).catch(console.log.bind(console));
+
+//console.log("stateData.properties", stateData.properties)
+
