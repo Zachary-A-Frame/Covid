@@ -12,12 +12,23 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 
 console.log("statesData.features", statesData.features)
 
-
+function formatNumber(num) {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+}
 
 
 var geojson;
 
+function thousandsSeparators(num)
+  {
+    var num_parts = num.toString().split(".");
+    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return num_parts.join(".");
+  }
 
+console.log("Thousands test",thousandsSeparators(857392847));
+console.log(thousandsSeparators(10000.23));
+console.log(thousandsSeparators(100000));
 
 function highlightFeature(e) {
   var layer = e.target;
@@ -28,9 +39,6 @@ function highlightFeature(e) {
     dashArray: '',
     fillOpacity: 0.7
   })
-    // .bindpopup("<h3>Plate Name:" +
-    //   "</h3>");
-
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
     layer.bringToFront();
   }
@@ -58,9 +66,20 @@ function onEachFeature(feature, layer) {
     mouseout: resetHighlight,
     //click: zoomToFeature
   })
+  //console.log("number with comma",(feature.properties.positive).toLocaleString('en') )
   console.log("feature2", feature.properties.name)
+  console.log("feature3", thousandsSeparators(637738822))
+  //var numb = thousandsSeparators(feature.properties.positive)
+  //console.log("numb", numb)
+  //var layer1 = `<h3>State: ${numb} </h3>`
+  //console.log("layer1", layer1)
+  //inserting layer1 does not work.  Insersting numb does not work.  Bizarre.
   layer.bindPopup("<h3>State: " + feature.properties.name +
-    "</h3>");
+    "</h3><h4>Total Tests: " + feature.properties.totalTestResults +
+    "</h4><h4>Total Positive: " + feature.properties.positive+
+    "</h4><h4>Hospitalized Currently: " + feature.properties.hospitalizedCurrently+
+    "</h4><h4>Total deaths: " + feature.properties.deaths+
+    "</h4>");
 
 }
 
@@ -95,6 +114,7 @@ console.log("staes data final", statesData)
 
 L.geoJson(statesData).addTo(map);
 console.log("statesData", statesData)
+
 function getColor(d) {
   return d > 1000 ? '#800026' :
     d > 500 ? '#BD0026' :
@@ -113,13 +133,9 @@ geojson = L.geoJson(statesData, {
 }).addTo(map);
 //console.log("covidData...........", covidData)
 
-
-
-
-
 function style(feature) {
   return {
-    fillColor: getColor(feature.properties.density),
+    fillColor: getColor(feature.properties.positive),
     weight: 2,
     opacity: 1,
     color: 'white',
@@ -129,14 +145,25 @@ function style(feature) {
 }
 console.log("geojson", geojson)
 
-
-
-
-
-
-
-
 }).catch(console.log.bind(console));
 
-//console.log("stateData.properties", stateData.properties)
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+        labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < feature.properties.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+
+legend.addTo(map);
 
