@@ -19,14 +19,13 @@ function formatNumber(num) {
 
 var geojson;
 
-function thousandsSeparators(num)
-  {
-    var num_parts = num.toString().split(".");
-    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return num_parts.join(".");
-  }
+function thousandsSeparators(num) {
+  var num_parts = num.toString().split(".");
+  num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return num_parts.join(".");
+}
 
-console.log("Thousands test",thousandsSeparators(857392847));
+console.log("Thousands test", thousandsSeparators(857392847));
 console.log(thousandsSeparators(10000.23));
 console.log(thousandsSeparators(100000));
 
@@ -76,9 +75,9 @@ function onEachFeature(feature, layer) {
   //inserting layer1 does not work.  Insersting numb does not work.  Bizarre.
   layer.bindPopup("<h3>State: " + feature.properties.name +
     "</h3><h4>Total Tests: " + feature.properties.totalTestResults +
-    "</h4><h4>Total Positive: " + feature.properties.positive+
-    "</h4><h4>Hospitalized Currently: " + feature.properties.hospitalizedCurrently+
-    "</h4><h4>Total deaths: " + feature.properties.deaths+
+    "</h4><h4>Total Positive: " + feature.properties.positive +
+    "</h4><h4>Hospitalized Currently: " + feature.properties.hospitalizedCurrently +
+    "</h4><h4>Total deaths: " + feature.properties.deaths +
     "</h4>");
 
 }
@@ -105,99 +104,111 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
         stateData.properties.positive = +oneData.positive;
         stateData.properties.totalTestResults = +oneData.totalTestResults;
         stateData.properties.deaths = +oneData.deaths;
-        console.log("stateData.properties------------------", stateData.properties)
+        //console.log("stateData.properties------------------", stateData.properties)
       }
-      console.log("stateData.properties88888888888888888", stateData.properties)
+      //console.log("stateData.properties88888888888888888", stateData.properties)
     })
   })
-console.log("staes data final", statesData)
+  console.log("staes data final", statesData)
 
-L.geoJson(statesData).addTo(myMap);
-console.log("statesData+_+_+_+_+_+", statesData)
+  L.geoJson(statesData).addTo(myMap);
+  console.log("statesData+_+_+_+_+_+", statesData)
 
-var colorsList = ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FD8D3C', 'FEB24C', '#FED976','#FFEDA0' ]
-var colorValues = [1000, 500, 200, 100, 50, 20, 10]
+  var colorsList = ['#800026', '#BD0026', '#E5E059', '#BDD358', '#FFFFFF', '#999799',
+    '#3066BE', '#60AFFF', "#28C2FF", "#2AF5FF"]
+  var colorValues = [1000, 700, 500, 400, 100, 80, 70, 60, 50, 10]
 
-//lets scale the color values for the property selected
+  var colorLabels = ["0 - 1", "1 - 2", "2 - 3", "3 - 4", "4 - 5", "5 - 6", ">6"]
 
-var positiveMap = statesData.features.map(function(d){
+  //lets scale the color values for the property selected
+
+  var positiveMap = statesData.features.map(function (d) {
     return d.properties.positive
   })
 
-  var hospitalizedCurrently = statesData.features.map(function(d){
+  var hospitalizedCurrently = statesData.features.map(function (d) {
     return d.properties.hospitalizedCurrently
   })
 
-  var deathsMap = statesData.features.map(function(d){
+  var deathsMap = statesData.features.map(function (d) {
     return d.properties.deaths
   })
 
-  var totalTestResultsMap = statesData.features.map(function(d){
+  var totalTestResultsMap = statesData.features.map(function (d) {
     return d.properties.totalTestResults
   })
 
+  console.log("positiveMap", positiveMap)
 
-console.log("positiveMap", positiveMap)
+  colorValues[0] = Math.max.apply(Math, positiveMap) * .9;
+  colorValues[colorsList.length - 1] = Math.min.apply(Math, positiveMap) * .9;
+  console.log("maximum value", Math.max.apply(Math, positiveMap))
+  console.log("first color", colorValues[0]);
+  var colorValueRangeInterval = ((colorValues[0] - colorValues[colorsList.length
+    - 1]) / colorsList.length)
 
-colorValues[0] = Math.max.apply(Math, positiveMap) * .9;
-colorValues[colorsList.length - 1] = Math.min.apply(Math, positiveMap) * .9;
-console.log("maximum value", Math.max.apply(Math, positiveMap))
-console.log("first color", colorValues[0]);
-for (var i = 1; i < colorsList.length-1; i++) {
-colorValues[i] = colorValues[0] - i * (colorValues[0] - colorValues[colorsList.length
- - 1]) / colorsList.length
-}
+  console.log("colorvaluerange interval", colorValueRangeInterval)
+  for (var i = 1; i < colorsList.length; i++) {
+    console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 2))
+    colorValues[i] = (colorValues[0] - colorValueRangeInterval) / Math.exp((i - 1) / 3)
+  }
 
-console.log("colorValues", colorValues)
+  console.log("colorValues", colorValues)
 
-function getColor(d) {
-  return d > colorValues[0] ? colorsList[0] :
-    d > colorValues[1] ? colorsList[1] :
-      d > colorValues[2] ? colorsList[2] :
-        d > colorValues[3] ? colorsList[3] :
-          d > colorValues[4] ? colorsList[4] :
-            d > colorValues[5] ? colorsList[5] :
-              d > colorValues[6] ? colorsList[6] :
-                colorsList[7];
-}
+  function getColor(d) {
+    return d > colorValues[0] ? colorsList[0] :
+      d > colorValues[1] ? colorsList[1] :
+        d > colorValues[2] ? colorsList[2] :
+          d > colorValues[3] ? colorsList[3] :
+            d > colorValues[4] ? colorsList[4] :
+              d > colorValues[5] ? colorsList[5] :
+                d > colorValues[6] ? colorsList[6] :
+                  d > colorValues[7] ? colorsList[7] :
+                    d > colorValues[8] ? colorsList[8] :
+                      colorsList[9];
+  }
 
-geojson = L.geoJson(statesData, {
-  style: style,
-  onEachFeature: onEachFeature,
-  //onEachFeatured: onEachFeatured
-}).addTo(myMap);
-//console.log("covidData...........", covidData)
+  geojson = L.geoJson(statesData, {
+    style: style,
+    onEachFeature: onEachFeature,
+    //onEachFeatured: onEachFeatured
+  }).addTo(myMap);
+  //console.log("covidData...........", covidData)
 
-function style(feature) {
-  return {
-    fillColor: getColor(feature.properties.positive),
-    weight: 2,
-    opacity: 1,
-    color: 'white',
-    dashArray: '3',
-    fillOpacity: 0.7
+  function style(feature) {
+    return {
+      fillColor: getColor(feature.properties.positive),
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7
+    };
+  }
+  console.log("geojson", geojson)
+  var legend = L.control({ position: "bottomright" });
+  legend.onAdd = function (colorValues) {
+    var div = L.DomUtil.create("div", "info legend");
+
+    //    var colors = earthquakes.options.colors;
+    var labels = [];
+
+    // Add min & max
+    var legendInfo = "<h1>Magnitude</h1>";
+
+    div.innerHTML = legendInfo;
+
+    colorValues.forEach(function (d, index) {
+      //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
+      labels.push("<li style=\"background-color:" + d + "\"></li><span>"
+        + colorLabels[index] + "</span><br>")
+    });
+
+    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+    return div;
   };
-}
-console.log("geojson", geojson)
-
+  legend.addTo(myMap)
 }).catch(console.log.bind(console));
 
 
-var legend = L.control({ position: "bottomright" });
-legend.onAdd = function () {
-  var div = L.DomUtil.create("div", "info legend");
 
-  //    var colors = earthquakes.options.colors;
-  var labels = [];
-
-  // Add min & max
-  var legendInfo = "<h1>Magnitude</h1>";
-
-  div.innerHTML = legendInfo;
- 
-  labels.push("<li>well hi there</li>")
-
-  div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-  return div;
-};
-legend.addTo(myMap)
