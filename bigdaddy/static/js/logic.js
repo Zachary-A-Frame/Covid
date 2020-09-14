@@ -141,11 +141,12 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   L.geoJson(statesData).addTo(myMap);
   console.log("statesData+_+_+_+_+_+", statesData)
 
-  var colorsList = ['#800026', '#BD0026', '#E5E059', '#BDD358', '#FFFFFF', '#999799',
-    '#3066BE', '#60AFFF', "#28C2FF", "#2AF5FF"]
+  var colorsList = ["#800026","#bd0026","#ddf8e8","#cdd5d1","#b4a6ab","#676f54","#6a8eae",
+  "#157145","#141204","#262330"]
+
   var colorValues = []
 
-  var colorLabels = ["0 - 1", "1 - 2", "2 - 3", "3 - 4", "4 - 5", "5 - 6", ">6"]
+  var colorLabels = []
 
   //lets scale the color values for the property selected
 
@@ -153,7 +154,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.positive
   })
 
-  var hospitalizedCurrently = statesData.features.map(function (d) {
+  var hospitalizedCurrentlyMap = statesData.features.map(function (d) {
     return d.properties.hospitalizedCurrently
   })
 
@@ -165,19 +166,30 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.totalTestResults
   })
 
+  var styleLayerSelection = 0
+
+  var mapSelection = [positiveMap, hospitalizedCurrentlyMap, deathsMap, totalTestResultsMap]
+
   console.log("positiveMap", positiveMap)
 
-  colorValues[0] = Math.max.apply(Math, positiveMap) * .9;
-  colorValues[colorsList.length - 1] = Math.min.apply(Math, positiveMap) * .9;
-  console.log("maximum value", Math.max.apply(Math, positiveMap))
+  var graphSetting = ["positive", "hospitalizedCurrently", "deaths", "totalTestResults"]
+
+  var legendLabel = ["Positive Cases", "Number Currently Hospitalized",
+    "Cumulative Deaths", "Total Number of Test Results"]
+
+  //function setScaleColor()
+  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .9;
+  colorValues[colorsList.length - 1] = Math.min.apply(Math, mapSelection[styleLayerSelection]) * 1.1;
+  console.log("maximum value", Math.max.apply(Math, mapSelection[styleLayerSelection]))
+  console.log("minimum value", Math.min.apply(Math, mapSelection[styleLayerSelection]))
   console.log("first color", colorValues[0]);
   var colorValueRangeInterval = ((colorValues[0] - colorValues[colorsList.length
     - 1]) / colorsList.length)
 
   console.log("colorvaluerange interval", colorValueRangeInterval)
   for (var i = 1; i < colorsList.length; i++) {
-    console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 2))
-    colorValues[i] = (colorValues[0] - colorValueRangeInterval) / Math.exp((i - 1) / 3)
+  //console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 3))
+    colorValues[i] = (colorValues[i-1] - colorValueRangeInterval*10/55*(10-i+1))
   }
 
   console.log("colorValues", colorValues)
@@ -186,6 +198,8 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
      + thousandsSeparators(Math.floor(colorValues[i+1]))
   })
+
+  colorLabels.push(thousandsSeparators(Math.floor(colorValues[colorValues.length -1])) + " < ")
 
   var legend = L.control({ position: "bottomright" });
   legend.onAdd = function () {
@@ -209,7 +223,6 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return div;
   };
   legend.addTo(myMap)
-
 
   function getColor(d) {
     console.log("get color", d)
