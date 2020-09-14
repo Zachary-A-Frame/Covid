@@ -43,7 +43,6 @@ function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
-
 var geojson;
 
 function thousandsSeparators(num) {
@@ -61,7 +60,7 @@ function highlightFeature(e) {
 
   layer.setStyle({
     weight: 5,
-    color: '#666',
+    //color: '#666',
     dashArray: '',
     fillOpacity: 0.7
   })
@@ -71,7 +70,15 @@ function highlightFeature(e) {
 }
 
 function resetHighlight(e) {
-  geojson.resetStyle(e.target);
+  var layer = e.target;
+
+  layer.setStyle({
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7
+  });
 }
 
 // function zoomToFeature(e) {
@@ -87,6 +94,7 @@ console.log("states data++++++++++++++++", statesData)
 function onEachFeature(feature, layer) {
   console.log("feature", feature.properties)
   console.log("layer", layer)
+  console.log("fill color", layer.options.fillColor)
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlight,
@@ -166,11 +174,11 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.totalTestResults
   })
 
-  var styleLayerSelection = 0
+  var styleLayerSelection = 3
 
   var mapSelection = [positiveMap, hospitalizedCurrentlyMap, deathsMap, totalTestResultsMap]
 
-  console.log("positiveMap", positiveMap)
+  console.log("styleLayerSelectionMap", mapSelection[styleLayerSelection])
 
   var graphSetting = ["positive", "hospitalizedCurrently", "deaths", "totalTestResults"]
 
@@ -189,14 +197,21 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   console.log("colorvaluerange interval", colorValueRangeInterval)
   for (var i = 1; i < colorsList.length; i++) {
   //console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 3))
-    colorValues[i] = (colorValues[i-1] - colorValueRangeInterval*10/55*(10-i+1))
-  }
+    colorValues[i] = (colorValues[0] / Math.exp((i - 1) / 3))}
 
   console.log("colorValues", colorValues)
 
   colorValues.forEach(function(d,i){
+    if(i == 0) {
+      colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " > "
+    }
+    else if (i == colorValues.length - 1) {
+      colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " < "
+    }
+    else {
     colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
      + thousandsSeparators(Math.floor(colorValues[i+1]))
+    }
   })
 
   colorLabels.push(thousandsSeparators(Math.floor(colorValues[colorValues.length -1])) + " < ")
@@ -209,12 +224,13 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     var labels = [];
 
     // Add min & max
-    var legendInfo = "<h1>Positive    f      Cases</h1>";
+    var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
 
     div.innerHTML = legendInfo;
     console.log("color values _$_%_^_", colorValues)
     colorsList.forEach(function (d, index) {
       //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
+      
       labels.push("<li style=\"background-color:" + d + "\"></li><span>"
         + colorLabels[index] + "</span><br>")
     });
@@ -223,6 +239,14 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return div;
   };
   legend.addTo(myMap)
+
+  geojson = L.geoJson(statesData, {
+    style: style,
+    onEachFeature: onEachFeature,
+    //onEachFeatured: onEachFeatured
+  }).addTo(myMap);
+  //console.log("covidData...........", covidData)
+
 
   function getColor(d) {
     console.log("get color", d)
@@ -238,12 +262,6 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
                       colorsList[9];
   }
 
-  geojson = L.geoJson(statesData, {
-    style: style,
-    onEachFeature: onEachFeature,
-    //onEachFeatured: onEachFeatured
-  }).addTo(myMap);
-  //console.log("covidData...........", covidData)
 
 var graphSetting = ["positive"]
 var variableG = graphSetting[0]
@@ -253,7 +271,7 @@ console.log("variableG", graphSetting[0])
 // console.log("feature.properties.graphsetting[0]", feature.properties.graphSetting[0])
 // console.log(eval(graphSetting[0]))
   function style(feature) {
-    var colorStyle = feature.properties.positive
+    var colorStyle = feature.properties[graphSetting[styleLayerSelection]]
     return {
       fillColor: getColor(colorStyle),
       weight: 2,
