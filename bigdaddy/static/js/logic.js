@@ -104,7 +104,7 @@ function onEachFeature(feature, layer) {
     "</h3><h4>Total Tests: " + parseFloat(feature.properties.totalTestResults).toLocaleString('en') +
     "</h4><h4>Total Positive: " + parseFloat(feature.properties.positive).toLocaleString('en') +
     "</h4><h4>Hospitalized Currently: " + parseFloat(feature.properties.hospitalizedCurrently).toLocaleString('en') +
-    "</h4><h4>Total deaths: " + parseFloat(feature.properties.deaths).toLocaleString('en') +
+    "</h4><h4>Total deaths: " + feature.properties.deaths +
     "</h4>");
 
 }
@@ -153,7 +153,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.positive
   })
 
-  var hospitalizedCurrentlyMap = statesData.features.map(function (d) {
+  var hospitalizedCurrently = statesData.features.map(function (d) {
     return d.properties.hospitalizedCurrently
   })
 
@@ -165,20 +165,11 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.totalTestResults
   })
 
-  var styleLayerSelection = 2
-
-  var mapSelection = [positiveMap, hospitalizedCurrentlyMap, deathsMap, totalTestResultsMap]
   console.log("positiveMap", positiveMap)
 
-  var graphSetting = ["positive", "hospitalizedCurrently", "deaths", "totalTestResults"]
-
-  var legendLabel = ["Positive Cases", "Number Currently Hospitalized",
-    "Cumulative Deaths", "Total Number of Test Results"]
-
-  //function setScaleColor()
-  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .9;
-  colorValues[colorsList.length - 1] = Math.min.apply(Math, mapSelection[styleLayerSelection]) * .9;
-  console.log("maximum value", Math.max.apply(Math, mapSelection[styleLayerSelection]))
+  colorValues[0] = Math.max.apply(Math, positiveMap) * .9;
+  colorValues[colorsList.length - 1] = Math.min.apply(Math, positiveMap) * .9;
+  console.log("maximum value", Math.max.apply(Math, positiveMap))
   console.log("first color", colorValues[0]);
   var colorValueRangeInterval = ((colorValues[0] - colorValues[colorsList.length
     - 1]) / colorsList.length)
@@ -191,9 +182,9 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
 
   console.log("colorValues", colorValues)
 
-  colorValues.forEach(function (d, i) {
+  colorValues.forEach(function(d,i){
     colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
-      + thousandsSeparators(Math.floor(colorValues[i + 1]))
+     + thousandsSeparators(Math.floor(colorValues[i+1]))
   })
 
   var legend = L.control({ position: "bottomright" });
@@ -204,7 +195,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     var labels = [];
 
     // Add min & max
-    var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
+    var legendInfo = "<h1>Positive    f      Cases</h1>";
 
     div.innerHTML = legendInfo;
     console.log("color values _$_%_^_", colorValues)
@@ -234,8 +225,6 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
                       colorsList[9];
   }
 
-
-
   geojson = L.geoJson(statesData, {
     style: style,
     onEachFeature: onEachFeature,
@@ -243,9 +232,15 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   }).addTo(myMap);
   //console.log("covidData...........", covidData)
 
+var graphSetting = ["positive"]
+var variableG = graphSetting[0]
+console.log("graphsettings", graphSetting[0])
+console.log("variableG", graphSetting[0])
+// console.log("feature.properties.positive", feature.properties)
+// console.log("feature.properties.graphsetting[0]", feature.properties.graphSetting[0])
+// console.log(eval(graphSetting[0]))
   function style(feature) {
-    //var graphSetting = ["positive"]
-    let colorStyle = feature.properties[graphSetting[styleLayerSelection]]
+    var colorStyle = feature.properties.positive
     return {
       fillColor: getColor(colorStyle),
       weight: 2,
