@@ -35,7 +35,7 @@ let overlayMaps = {
 
 // Then we add a control to the map that will allow the user to change which
 // layers are visible.
-L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+// L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
 console.log("statesData.features", statesData.features)
 
@@ -174,7 +174,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.totalTestResults
   })
 
-  var styleLayerSelection = 3
+  var styleLayerSelection = 0
 
   var mapSelection = [positiveMap, hospitalizedCurrentlyMap, deathsMap, totalTestResultsMap]
 
@@ -186,7 +186,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     "Cumulative Deaths", "Total Number of Test Results"]
 
   //function setScaleColor()
-  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .85;
+  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .82;
   colorValues[colorsList.length - 1] = Math.min.apply(Math, mapSelection[styleLayerSelection]) * 1.1;
   console.log("maximum value", Math.max.apply(Math, mapSelection[styleLayerSelection]))
   console.log("minimum value", Math.min.apply(Math, mapSelection[styleLayerSelection]))
@@ -242,12 +242,28 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   };
   legend.addTo(myMap)
 
+  var legend2 = L.control({ position: "topright" });
+  legend2.onAdd = function () {
+    var div = L.DomUtil.create("div", "info legend");
+
+    // Add min & max
+    // var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
+
+    // div.innerHTML = legendInfo;
+    div.innerHTML = '<select><option>0</option><option>1</option><option>2</option><option>3</option></select>';
+    div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+    return div;
+  };
+  legend2.addTo(myMap)
+
   geojson = L.geoJson(statesData, {
     style: style,
     onEachFeature: onEachFeature,
     //onEachFeatured: onEachFeatured
   }).addTo(myMap);
   //console.log("covidData...........", covidData)
+
+
 
 
   function getColor(d) {
@@ -283,10 +299,10 @@ console.log("variableG", graphSetting[0])
       fillOpacity: 0.7
     };
   }
-  console.log("geojson", geojson)
-  L.control.layers(baseMaps, overlayMaps, {
-    collapsed: false
-  }).addTo(myMap);
+  // console.log("geojson", geojson)
+  // L.control.layers(baseMaps, overlayMaps, {
+  //   collapsed: false
+  // }).addTo(myMap);
 }).catch(console.log.bind(console));
 
 
