@@ -73,11 +73,11 @@ function resetHighlight(e) {
   var layer = e.target;
 
   layer.setStyle({
-    weight: 2,
-    opacity: 1,
-    color: 'white',
-    dashArray: '3',
-    fillOpacity: 0.7
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7
   });
 }
 
@@ -149,9 +149,9 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   L.geoJson(statesData).addTo(myMap);
   console.log("statesData+_+_+_+_+_+", statesData)
 
-  var colorsList = ["#800026","#bd0026","#ddf8e8","#cdd5d1","#b4a6ab","#676f54","#6a8eae",
-  "#157145","#141204","#262330"]
-
+  var colorsList = ["#800026","#bd0026","#FCAA67","#ffffc7","#548687","#2660a4","#b9dfdc",
+  "#bbacc1","#545643","#0e79b2"]
+//
   var colorValues = []
 
   var colorLabels = []
@@ -186,7 +186,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     "Cumulative Deaths", "Total Number of Test Results"]
 
   //function setScaleColor()
-  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .9;
+  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .85;
   colorValues[colorsList.length - 1] = Math.min.apply(Math, mapSelection[styleLayerSelection]) * 1.1;
   console.log("maximum value", Math.max.apply(Math, mapSelection[styleLayerSelection]))
   console.log("minimum value", Math.min.apply(Math, mapSelection[styleLayerSelection]))
@@ -197,20 +197,22 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   console.log("colorvaluerange interval", colorValueRangeInterval)
   for (var i = 1; i < colorsList.length; i++) {
   //console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 3))
-    colorValues[i] = (colorValues[0] / Math.exp((i - 1) / 3))}
+    colorValues[i] = (colorValues[0] / Math.exp((i) / 3))}
 
-  console.log("colorValues", colorValues)
+  console.log("colorValues==", colorValues)
 
   colorValues.forEach(function(d,i){
     if(i == 0) {
       colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " > "
     }
     else if (i == colorValues.length - 1) {
-      colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " < "
+      //I am not sure I understand why this colorValues needs a -1.  It works!!
+      colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i-1])) + " < "
     }
     else {
+      console.log("else statement", i)
     colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
-     + thousandsSeparators(Math.floor(colorValues[i+1]))
+     + thousandsSeparators(Math.floor(colorValues[i-1]))
     }
   })
 
@@ -227,7 +229,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
 
     div.innerHTML = legendInfo;
-    console.log("color values _$_%_^_", colorValues)
+    //console.log("color values _$_%_^_", colorValues)
     colorsList.forEach(function (d, index) {
       //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
       
