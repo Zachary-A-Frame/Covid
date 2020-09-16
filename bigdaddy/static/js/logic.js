@@ -91,9 +91,9 @@ function selectionList(d) {
   return selectionDisplay
 }
 
-console.log("Thousands test", thousandsSeparators(857392847));
-console.log(thousandsSeparators(10000.23));
-console.log(thousandsSeparators(100000));
+// console.log("Thousands test", thousandsSeparators(857392847));
+// console.log(thousandsSeparators(10000.23));
+// console.log(thousandsSeparators(100000));
 
 function highlightFeature(e) {
   var layer = e.target;
@@ -132,17 +132,17 @@ console.log("states data++++++++++++++++", statesData)
 // })
 
 function onEachFeature(feature, layer) {
-  console.log("feature", feature.properties)
-  console.log("layer", layer)
-  console.log("fill color", layer.options.fillColor)
+  // console.log("feature", feature.properties)
+  // console.log("layer", layer)
+  // console.log("fill color", layer.options.fillColor)
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlight,
     //click: zoomToFeature
   })
   //console.log("number with comma",(feature.properties.positive).toLocaleString('en') )
-  console.log("feature2", feature.properties.name)
-  console.log("feature3", thousandsSeparators(637738822))
+  // console.log("feature2", feature.properties.name)
+  // console.log("feature3", thousandsSeparators(637738822))
   //var numb = thousandsSeparators(feature.properties.positive)
   //console.log("numb", numb)
   //var layer1 = `<h3>State: ${numb} </h3>`
@@ -159,7 +159,7 @@ function onEachFeature(feature, layer) {
 
 d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   latestDate = data[0].date
-  console.log("latest date", latestDate)
+  // console.log("latest date", latestDate)
   return (data.filter(function (d) {
     return (d.date == latestDate);
   }));
@@ -223,7 +223,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
 
     var mapSelection = [totalTestResultsMap, positiveMap, hospitalizedCurrentlyMap, deathsMap ]
 
-    console.log("styleLayerSelectionMap", mapSelection[styleLayerSelection])
+    // console.log("styleLayerSelectionMap", mapSelection[styleLayerSelection])
 
     var graphSetting = ["totalTestResults", "positive", "hospitalizedCurrently", "deaths"]
 
@@ -311,7 +311,6 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
       //styleLayerSelection = 2
       var newVar = 5
       //console.log("stylelayerSelection", stylelayerSelection)
-      console.log("newVar", newVar)
       myMap.removeControl(legend)
       myMap.removeControl(legend2)
       //alert(x)
