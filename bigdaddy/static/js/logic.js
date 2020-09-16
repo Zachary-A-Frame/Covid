@@ -65,19 +65,19 @@ function selectionList(d) {
       "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
   }
   else if (d == 1) {
-    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"1" + "\"selected>" + styleLayerSelection[1] +
-      "</option><option value = \"0\">" + styleLayerSelection[0] + "</option><option value = \"2\">" + styleLayerSelection[2] +
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0\">" + styleLayerSelection[0] +
+      "</option><option value = \"1" + "\"selected>" + styleLayerSelection[1] + "</option><option value = \"2\">" + styleLayerSelection[2] +
       "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
   }
   else if (d == 2) {
-    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"2" + "\"selected>" + styleLayerSelection[2] +
-      "</option><option value = \"0\">" + styleLayerSelection[0] + "</option><option value = \"1\">" + styleLayerSelection[1] +
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0\">" + styleLayerSelection[0] +
+      "</option><option value = \"1\">" + styleLayerSelection[1] + "</option><option value = \"2" + "\"selected>" + styleLayerSelection[2] +
       "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
   }
   else {
-    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"3" + "\"selected>" + styleLayerSelection[3] +
-      "</option><option value = \"0\">" + styleLayerSelection[0] + "</option><option value = \"1\">" + styleLayerSelection[1] +
-      "</option><option value = \"2\">" + styleLayerSelection[2] + "</option></select>";
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0\">" + styleLayerSelection[0] +
+      "</option><option value = \"1\">" + styleLayerSelection[1] + "</option><option value = \"2\">" + styleLayerSelection[2] +
+      "</option><option value = \"3" + "\"selected>" + styleLayerSelection[3] + "</option></select>";
   }
   return selectionDisplay
 }
