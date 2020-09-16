@@ -272,7 +272,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
       var labels = [];
 
       // Add min & max
-      var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
+      var legendInfo = `<h1>COVID-16<br>${legendLabel[styleLayerSelection]}</h1>`;
 
       div.innerHTML = legendInfo;
       //console.log("color values _$_%_^_", colorValues)
