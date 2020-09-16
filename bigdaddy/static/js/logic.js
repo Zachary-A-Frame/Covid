@@ -2,6 +2,7 @@
 
 var myMap = L.map('map').setView([37.8, -96], 5);
 var legend;
+var latestDate;
 
 var stateMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' +
   API_KEY, {
@@ -59,25 +60,33 @@ function thousandsSeparators(num) {
 
 function selectionList(d) {
   //d is stylelayerSelection
+  formatDate = latestDate.slice(6) + "-"+ latestDate.slice(4,6) + "-" + latestDate.slice(0,4);
+  // console.log("sliced date",latestDate.slice(0,4))
+  // console.log("sliced date",latestDate.slice(4,6))
+  // console.log("sliced date",latestDate.slice(6))
   if (d == 0) {
     var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0" + "\"selected>" + styleLayerSelection[0] +
       "</option><option value = \"1\">" + styleLayerSelection[1] + "</option><option value = \"2\">" + styleLayerSelection[2] +
-      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
+      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select><h4>Date:" + 
+      formatDate + "</h4>";
   }
   else if (d == 1) {
     var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0\">" + styleLayerSelection[0] +
       "</option><option value = \"1" + "\"selected>" + styleLayerSelection[1] + "</option><option value = \"2\">" + styleLayerSelection[2] +
-      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
+      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select><h4>Date:" + 
+      formatDate + "</h4>";
   }
   else if (d == 2) {
     var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0\">" + styleLayerSelection[0] +
       "</option><option value = \"1\">" + styleLayerSelection[1] + "</option><option value = \"2" + "\"selected>" + styleLayerSelection[2] +
-      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
+      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select><h4>Date:" + 
+      formatDate + "</h4>";
   }
   else {
     var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0\">" + styleLayerSelection[0] +
       "</option><option value = \"1\">" + styleLayerSelection[1] + "</option><option value = \"2\">" + styleLayerSelection[2] +
-      "</option><option value = \"3" + "\"selected>" + styleLayerSelection[3] + "</option></select>";
+      "</option><option value = \"3" + "\"selected>" + styleLayerSelection[3] + "</option></select><h4>Date:" + 
+      formatDate + "</h4>";
   }
   return selectionDisplay
 }
