@@ -1,6 +1,7 @@
 // Store our API endpoint inside queryUrl
 
 var myMap = L.map('map').setView([37.8, -96], 5);
+var legend;
 
 var stateMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' +
   API_KEY, {
@@ -33,6 +34,11 @@ let overlayMaps = {
   "Total Deaths": deathsLayer
 };
 
+styleLayerSelection = ["Total Tests",
+  "Positive Cases",
+  "Hospitalizations",
+  "Total Deaths"]
+
 // Then we add a control to the map that will allow the user to change which
 // layers are visible.
 // L.control.layers(baseMaps, overlayMaps).addTo(myMap);
@@ -49,6 +55,31 @@ function thousandsSeparators(num) {
   var num_parts = num.toString().split(".");
   num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return num_parts.join(".");
+}
+
+function selectionList(d) {
+  //d is stylelayerSelection
+  if (d == 0) {
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"0" + "\"selected>" + styleLayerSelection[0] +
+      "</option><option value = \"1\">" + styleLayerSelection[1] + "</option><option value = \"2\">" + styleLayerSelection[2] +
+      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
+  }
+  else if (d == 1) {
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"1" + "\"selected>" + styleLayerSelection[1] +
+      "</option><option value = \"0\">" + styleLayerSelection[0] + "</option><option value = \"2\">" + styleLayerSelection[2] +
+      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
+  }
+  else if (d == 2) {
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"2" + "\"selected>" + styleLayerSelection[2] +
+      "</option><option value = \"0\">" + styleLayerSelection[0] + "</option><option value = \"1\">" + styleLayerSelection[1] +
+      "</option><option value = \"3\">" + styleLayerSelection[3] + "</option></select>";
+  }
+  else {
+    var selectionDisplay = "<select id =\"mySelection" + "\"><option value = \"3" + "\"selected>" + styleLayerSelection[3] +
+      "</option><option value = \"0\">" + styleLayerSelection[0] + "</option><option value = \"1\">" + styleLayerSelection[1] +
+      "</option><option value = \"2\">" + styleLayerSelection[2] + "</option></select>";
+  }
+  return selectionDisplay
 }
 
 console.log("Thousands test", thousandsSeparators(857392847));
@@ -73,11 +104,11 @@ function resetHighlight(e) {
   var layer = e.target;
 
   layer.setStyle({
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7
   });
 }
 
@@ -112,7 +143,7 @@ function onEachFeature(feature, layer) {
     "</h3><h4>Total Tests: " + parseFloat(feature.properties.totalTestResults).toLocaleString('en') +
     "</h4><h4>Total Positive: " + parseFloat(feature.properties.positive).toLocaleString('en') +
     "</h4><h4>Hospitalized Currently: " + parseFloat(feature.properties.hospitalizedCurrently).toLocaleString('en') +
-    "</h4><h4>Total deaths: " + feature.properties.deaths +
+    "</h4><h4>Total deaths: " + parseFloat(feature.properties.deaths).toLocaleString('en') +
     "</h4>");
 
 }
@@ -149,9 +180,9 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
   L.geoJson(statesData).addTo(myMap);
   console.log("statesData+_+_+_+_+_+", statesData)
 
-  var colorsList = ["#800026","#bd0026","#FCAA67","#ffffc7","#548687","#2660a4","#b9dfdc",
-  "#bbacc1","#545643","#0e79b2"]
-//
+  var colorsList = ["#800026", "#bd0026", "#FCAA67", "#ffffc7", "#548687", "#2660a4", "#b9dfdc",
+    "#bbacc1", "#545643", "#68c2f3"]
+  //
   var colorValues = []
 
   var colorLabels = []
@@ -174,130 +205,150 @@ d3.csv("./static/data/AugustSeptembercovid.csv").then(function (data) {
     return d.properties.totalTestResults
   })
 
-  var styleLayerSelection = 0
+  drawMap(0)
 
-  var mapSelection = [positiveMap, hospitalizedCurrentlyMap, deathsMap, totalTestResultsMap]
+  //testStyle.on("submit", console.log("wassup"));
+  function drawMap(styleLayerSelection) {
+    //var styleLayerSelection = 0
+    var selectionListText = selectionList(styleLayerSelection)
 
-  console.log("styleLayerSelectionMap", mapSelection[styleLayerSelection])
+    var mapSelection = [totalTestResultsMap, positiveMap, hospitalizedCurrentlyMap, deathsMap ]
 
-  var graphSetting = ["positive", "hospitalizedCurrently", "deaths", "totalTestResults"]
+    console.log("styleLayerSelectionMap", mapSelection[styleLayerSelection])
 
-  var legendLabel = ["Positive Cases", "Number Currently Hospitalized",
-    "Cumulative Deaths", "Total Number of Test Results"]
+    var graphSetting = ["totalTestResults", "positive", "hospitalizedCurrently", "deaths"]
 
-  //function setScaleColor()
-  colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .82;
-  colorValues[colorsList.length - 1] = Math.min.apply(Math, mapSelection[styleLayerSelection]) * 1.1;
-  console.log("maximum value", Math.max.apply(Math, mapSelection[styleLayerSelection]))
-  console.log("minimum value", Math.min.apply(Math, mapSelection[styleLayerSelection]))
-  console.log("first color", colorValues[0]);
-  var colorValueRangeInterval = ((colorValues[0] - colorValues[colorsList.length
-    - 1]) / colorsList.length)
+    var legendLabel = ["Total Number of Test Results", "Positive Cases", "Number Currently Hospitalized",
+      "Cumulative Deaths"]
 
-  console.log("colorvaluerange interval", colorValueRangeInterval)
-  for (var i = 1; i < colorsList.length; i++) {
-  //console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 3))
-    colorValues[i] = (colorValues[0] / Math.exp((i) / 3))}
+    //function setScaleColor()
+    colorValues[0] = Math.max.apply(Math, mapSelection[styleLayerSelection]) * .82;
+    colorValues[colorsList.length - 1] = Math.min.apply(Math, mapSelection[styleLayerSelection]) * 1.1;
+    console.log("maximum value", Math.max.apply(Math, mapSelection[styleLayerSelection]))
+    console.log("minimum value", Math.min.apply(Math, mapSelection[styleLayerSelection]))
+    console.log("first color", colorValues[0]);
+    var colorValueRangeInterval = ((colorValues[0] - colorValues[colorsList.length
+      - 1]) / colorsList.length)
 
-  console.log("colorValues==", colorValues)
-
-  colorValues.forEach(function(d,i){
-    if(i == 0) {
-      colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " > "
+    console.log("colorvaluerange interval", colorValueRangeInterval)
+    for (var i = 1; i < colorsList.length; i++) {
+      //console.log("Math.exp((i-1)/2)", i, Math.exp((i - 1) / 3))
+      colorValues[i] = (colorValues[0] / Math.exp((i) / 3))
     }
-    else if (i == colorValues.length - 1) {
-      //I am not sure I understand why this colorValues needs a -1.  It works!!
-      colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i-1])) + " < "
-    }
-    else {
-      console.log("else statement", i)
-    colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
-     + thousandsSeparators(Math.floor(colorValues[i-1]))
-    }
-  })
 
-  colorLabels.push(thousandsSeparators(Math.floor(colorValues[colorValues.length -1])) + " < ")
+    console.log("colorValues==", colorValues)
 
-  var legend = L.control({ position: "bottomright" });
-  legend.onAdd = function () {
-    var div = L.DomUtil.create("div", "info legend");
+    colorValues.forEach(function (d, i) {
+      if (i == 0) {
+        colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " > "
+      }
+      else if (i == colorValues.length - 1) {
+        //I am not sure I understand why this colorValues needs a -1.  It works!!
+        colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i - 1])) + " < "
+      }
+      else {
+        console.log("else statement", i)
+        colorLabels[i] = thousandsSeparators(Math.floor(colorValues[i])) + " - "
+          + thousandsSeparators(Math.floor(colorValues[i - 1]))
+      }
+    })
 
-    //    var colors = earthquakes.options.colors;
-    var labels = [];
+    colorLabels.push(thousandsSeparators(Math.floor(colorValues[colorValues.length - 1])) + " < ")
 
-    // Add min & max
-    var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
+    legend = L.control({ position: "bottomright" });
+    legend.onAdd = function () {
+      var div = L.DomUtil.create("div", "info legend");
 
-    div.innerHTML = legendInfo;
-    //console.log("color values _$_%_^_", colorValues)
-    colorsList.forEach(function (d, index) {
-      //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
-      
-      labels.push("<li style=\"background-color:" + d + "\"></li><span>"
-        + colorLabels[index] + "</span><br>")
+      //    var colors = earthquakes.options.colors;
+      var labels = [];
+
+      // Add min & max
+      var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
+
+      div.innerHTML = legendInfo;
+      //console.log("color values _$_%_^_", colorValues)
+      colorsList.forEach(function (d, index) {
+        //     labels.push("<p><li style=\"background-color: " + colors[index] + "\"></li>" + quakeLabels[index] +"</p>");
+
+        labels.push("<li style=\"background-color:" + d + "\"></li><span>"
+          + colorLabels[index] + "</span>")
+      });
+
+      div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+      return div;
+    };
+    legend.addTo(myMap)
+
+    var legend2 = L.control({ position: "topright" });
+    legend2.onAdd = function () {
+      var div = L.DomUtil.create("div", "info legend2");
+
+      // Add min & max
+      // var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
+
+      // div.innerHTML = legendInfo;
+      div.innerHTML = selectionListText
+
+        //div.innerHTML = "<select><option>0</option><option>1</option><option>2</option><option>3</option></select>";
+        div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+      return div;
+    };
+    legend2.addTo(myMap)
+
+    //this is jQuery.  don't even know what the heck it is but it works.
+
+    $('select').change(function () {
+      var x = document.getElementById("mySelection").value;
+      //styleLayerSelection = 2
+      var newVar = 5
+      //console.log("stylelayerSelection", stylelayerSelection)
+      console.log("newVar", newVar)
+      myMap.removeControl(legend)
+      myMap.removeControl(legend2)
+      //alert(x)
+
+      drawMap(x);
     });
 
-    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-    return div;
-  };
-  legend.addTo(myMap)
+    geojson = L.geoJson(statesData, {
+      style: style,
+      onEachFeature: onEachFeature,
+      //onEachFeatured: onEachFeatured
+    }).addTo(myMap);
+    //console.log("covidData...........", covidData)
 
-  var legend2 = L.control({ position: "topright" });
-  legend2.onAdd = function () {
-    var div = L.DomUtil.create("div", "info legend");
+    function getColor(d) {
+      console.log("get color", d)
+      return d > colorValues[0] ? colorsList[0] :
+        d > colorValues[1] ? colorsList[1] :
+          d > colorValues[2] ? colorsList[2] :
+            d > colorValues[3] ? colorsList[3] :
+              d > colorValues[4] ? colorsList[4] :
+                d > colorValues[5] ? colorsList[5] :
+                  d > colorValues[6] ? colorsList[6] :
+                    d > colorValues[7] ? colorsList[7] :
+                      d > colorValues[8] ? colorsList[8] :
+                        colorsList[9];
+    }
 
-    // Add min & max
-    // var legendInfo = `<h1>${legendLabel[styleLayerSelection]}</h1>`;
-
-    // div.innerHTML = legendInfo;
-    div.innerHTML = '<select><option>0</option><option>1</option><option>2</option><option>3</option></select>';
-    div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
-    return div;
-  };
-  legend2.addTo(myMap)
-
-  geojson = L.geoJson(statesData, {
-    style: style,
-    onEachFeature: onEachFeature,
-    //onEachFeatured: onEachFeatured
-  }).addTo(myMap);
-  //console.log("covidData...........", covidData)
-
-
-
-
-  function getColor(d) {
-    console.log("get color", d)
-    return d > colorValues[0] ? colorsList[0] :
-      d > colorValues[1] ? colorsList[1] :
-        d > colorValues[2] ? colorsList[2] :
-          d > colorValues[3] ? colorsList[3] :
-            d > colorValues[4] ? colorsList[4] :
-              d > colorValues[5] ? colorsList[5] :
-                d > colorValues[6] ? colorsList[6] :
-                  d > colorValues[7] ? colorsList[7] :
-                    d > colorValues[8] ? colorsList[8] :
-                      colorsList[9];
-  }
-
-
-var graphSetting = ["positive"]
-var variableG = graphSetting[0]
-console.log("graphsettings", graphSetting[0])
-console.log("variableG", graphSetting[0])
-// console.log("feature.properties.positive", feature.properties)
-// console.log("feature.properties.graphsetting[0]", feature.properties.graphSetting[0])
-// console.log(eval(graphSetting[0]))
-  function style(feature) {
-    var colorStyle = feature.properties[graphSetting[styleLayerSelection]]
-    return {
-      fillColor: getColor(colorStyle),
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
-    };
+    var graphSetting = ["positive"]
+    var variableG = graphSetting[0]
+    console.log("graphsettings", graphSetting[0])
+    console.log("variableG", graphSetting[0])
+    // console.log("feature.properties.positive", feature.properties)
+    // console.log("feature.properties.graphsetting[0]", feature.properties.graphSetting[0])
+    // console.log(eval(graphSetting[0]))
+    function style(feature) {
+      var colorStyle = feature.properties[graphSetting[styleLayerSelection]]
+      return {
+        fillColor: getColor(colorStyle),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+      };
+    }
   }
   // console.log("geojson", geojson)
   // L.control.layers(baseMaps, overlayMaps, {
