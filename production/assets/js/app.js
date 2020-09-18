@@ -91,7 +91,7 @@ d3.csv("assets/data/data.csv").then((importedData) => {
         var opt = options[i];
 
         var el = document.createElement("option");
-        el.text = opt;
+        el.text = (opt.slice(4, 6) + "/" + opt.slice(6, 8));
         el.value = opt;
 
         // select.add(el);
@@ -118,7 +118,8 @@ function optionChanged(subject) {
         visualize(sampleData)
     });
 }
-
+// Initializing graph
+optionChanged(20200911)
 
 function visualize(csvData) {
 

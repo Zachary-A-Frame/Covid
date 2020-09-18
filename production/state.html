@@ -21,8 +21,6 @@
      </head>
 
      <body>
-
-          <!-- The div that holds our map -->
           <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                <a class="navbar-brand" href="/">Map Data</a>
                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -41,19 +39,19 @@
                                         class="sr-only">(current)</span></a>
                          </li>
                          <li class="nav-item active">
-                              <a class="nav-link" href="/utility/AugustSeptemberCovid.csv" download> Download CSV <span
-                                        class="sr-only">(current)</span>
+                              <a class="nav-link" href="/utility/AugustSeptemberCovid.csv" download> Download CSV <span class="sr-only">(current)</span>
                               </a>
                          </li>
                     </ul>
-
                </div>
           </nav>
-
-          <!-- Andrew  -->
+          <!-- The div that holds our map -->
+          <!-- Andrew
+          <div class="jumbotron">
                <div id="map">
                </div>
-          <!-- Matt
+          </div> -->
+          <!-- Matt  -->
           <div class="container">
                <div class="row">
                     <div class="col-xs-12 col-md-12">
@@ -67,8 +65,8 @@
                               <select id="selDataset" onchange="optionChanged(this.value)"></select>
                          </div>
                          <div id="scatter">
-                               We append our chart here. -->
-          <!-- </div>
+                              <!-- We append our chart here. -->
+                         </div>
                     </div>
                </div>
                <div class="row">
@@ -86,7 +84,8 @@
                     </div>
                </div>
           </div>
-          <div id="plotly"></div>
+          <!-- Zach -->
+          <!-- <div id="plotly"></div>
 
           <div class="container">
                <div class="row">
@@ -106,8 +105,8 @@
                          <option value="totalTestResults">Total Test Results</option>
                     </select>
                     <div id="line"></div>
-               </div>
-          </div>  -->
+               </div> -->
+          </div>
           </div>
           <!-- All of Andrew's Requirements  -->
           <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -135,9 +134,9 @@
           <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
           <!-- Our JavaScript -->
           <!-- Andrew  -->
-          <script type="text/javascript" src="static/js/logic.js"></script>
+          <!-- <script type="text/javascript" src="static/js/logic.js"></script> -->
           <!-- Matt  -->
-          <!-- <script type="text/javascript" src="assets/js/app.js"></script> -->
+          <script type="text/javascript" src="assets/js/app.js"></script>
           <!-- Zach -->
           <!-- <script type="text/javascript" src="utility/app.js"></script> -->
 

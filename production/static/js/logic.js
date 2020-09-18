@@ -48,7 +48,7 @@ styleLayerSelection = [
 // layers are visible.
 // L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
-console.log("statesData.features", statesData.features);
+// console.log("statesData.features", statesData.features);
 
 function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -345,7 +345,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv")
           colorLabels[i] =
             thousandsSeparators(Math.floor(colorValues[i - 1])) + " < ";
         } else {
-          console.log("else statement", i);
+          // console.log("else statement", i);
           colorLabels[i] =
             thousandsSeparators(Math.floor(colorValues[i])) +
             " - " +
@@ -426,7 +426,7 @@ d3.csv("./static/data/AugustSeptembercovid.csv")
       //console.log("covidData...........", covidData)
 
       function getColor(d) {
-        console.log("get color", d);
+        // console.log("get color", d);
         return d > colorValues[0]
           ? colorsList[0]
           : d > colorValues[1]
@@ -450,8 +450,8 @@ d3.csv("./static/data/AugustSeptembercovid.csv")
 
       var graphSetting = ["positive"];
       var variableG = graphSetting[0];
-      console.log("graphsettings", graphSetting[0]);
-      console.log("variableG", graphSetting[0]);
+      // console.log("graphsettings", graphSetting[0]);
+      // console.log("variableG", graphSetting[0]);
       // console.log("feature.properties.positive", feature.properties)
       // console.log("feature.properties.graphsetting[0]", feature.properties.graphSetting[0])
       // console.log(eval(graphSetting[0]))
@@ -472,4 +472,4 @@ d3.csv("./static/data/AugustSeptembercovid.csv")
     //   collapsed: false
     // }).addTo(myMap);
   })
-  .catch(console.log.bind(console));
+  // .catch(console.log.bind(console));
